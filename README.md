@@ -43,6 +43,58 @@ module "github_oidc_iam" {
 }
 ```
 
+## Implementation Architecture
+```mermaid
+flowchart TB
+    %% Define styles
+    classDef github fill:#4078c0,stroke:#333,stroke-width:2px,color:white
+    classDef aws fill:#FF9900,stroke:#333,stroke-width:2px,color:white
+    classDef security fill:#2ECC71,stroke:#333,stroke-width:2px,color:white
+    classDef config fill:#95A5A6,stroke:#333,stroke-width:2px,color:white
+    classDef docs fill:#3498DB,stroke:#333,stroke-width:2px,color:white
+
+    %% GitHub Components
+    GHA["GitHub Actions"]:::github
+
+    %% Authentication Flow
+    OIDC["AWS OIDC Provider"]:::security
+    Trust["Trust Relationship"]:::security
+
+    %% IAM Components
+    IAMRole["IAM Role"]:::aws
+    Policies["Policy Management"]:::aws
+
+    %% Policy Types
+    subgraph PolicyTypes["Policy Types"]
+        CustomPol["Custom Policies"]:::aws
+        ExistingPol["Existing AWS Policies"]:::aws
+        AddPol["Additional Policies"]:::aws
+    end
+
+    %% Configuration
+    Config["Configuration Parameters"]:::config
+    Outputs["Resource Outputs"]:::docs
+
+    %% Connections
+    GHA -->|"OIDC Token"| OIDC
+    OIDC -->|"Validates"| Trust
+    Trust -->|"Establishes"| IAMRole
+    IAMRole --> Policies
+    Policies --> PolicyTypes
+    Config --> Trust
+    Config --> IAMRole
+    IAMRole --> Outputs
+
+    %% Click Events
+    click IAMRole "https://github.com/srajasimman/terraform-aws-github-oidc-iam/blob/main/main.tf"
+    click Config "https://github.com/srajasimman/terraform-aws-github-oidc-iam/blob/main/variables.tf"
+    click Outputs "https://github.com/srajasimman/terraform-aws-github-oidc-iam/blob/main/outputs.tf"
+    click Examples "https://github.com/srajasimman/terraform-aws-github-oidc-iam/blob/main/examples/basic/main.tf"
+    click Examples "https://github.com/srajasimman/terraform-aws-github-oidc-iam/blob/main/examples/basic/README.md"
+    click Trust "https://github.com/srajasimman/terraform-aws-github-oidc-iam/blob/main/README.md"
+
+```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
